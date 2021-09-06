@@ -54,6 +54,29 @@ services:
             rmq:
                 aliases:
                     - rmqbroker-a
+    rmqbroker-a-salve:
+        image: foxiswho/rocketmq:broker-4.5.1
+        container_name: rmqbroker-a-salve
+        ports:
+            - 10921:10921
+        volumes:
+            - /Users/dxm/docker/rocketmq/logs/borker-a:/opt/logs
+            - /Users/dxm/docker/rocketmq/store/borker-a:/opt/store
+            - /Users/dxm/docker/rocketmq/conf/broker-a/broker-a-s.conf:/opt/rocketmq-4.5.1/conf/broker.conf.old
+        environment:
+            TZ: Asia/Shanghai
+            NAMESRV_ADDR: "rmqnamesrv-a:9876"
+            JAVA_OPTS: " -Duser.home=/opt"
+            JAVA_OPT_EXT: "-server -Xms256m -Xmx256m -Xmn256m"
+        command: sh mqbroker -c /opt/rocketmq-4.5.1/conf/broker.conf.old autoCreateTopicEnable=true &
+        links:
+            - rmqnamesrv-a:rmqnamesrv-a
+            - rmqnamesrv-b:rmqnamesrv-b
+        networks:
+            rmq:
+                aliases:
+                    - rmqbroker-a-salve
+
     rmqbroker-b:
         image: foxiswho/rocketmq:broker-4.5.1
         container_name: rmqbroker-b
