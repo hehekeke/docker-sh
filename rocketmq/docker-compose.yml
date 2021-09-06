@@ -4,108 +4,144 @@ networks:
         name: rmq
         driver: bridge
 services:
-    rmqnamesrv-a:
+    rmqnamesrv0:
             image: foxiswho/rocketmq:server-4.5.1
-            container_name: rmqnamesrv-a
+            container_name: rmqnamesrv0
             ports:
                 -   9876:9876
-            volumes:
-                -   /Users/dxm/docker/rocketmq/logs/nameserver-a:/opt/logs
-                -   /Users/dxm/docker/rocketmq/logs/store-a:/opt/store
             command: sh mqnamesrv
             networks:
                 rmq:
                     aliases:
-                        -   rmqnamesrv-a
-    rmqnamesrv-b:
+                        -   rmqnamesrv0
+    rmqnamesrv1:
         image: foxiswho/rocketmq:server-4.5.1
         container_name: rmqnamesrv-b
         ports:
             - 9877:9877
-        volumes:
-            - /Users/dxm/docker/rocketmq/logs/nameserver-b:/opt/logs
-            - /Users/dxm/docker/rocketmq/logs/store-b:/opt/store
         command: sh mqnamesrv
         networks:
             rmq:
                 aliases:
-                      - rmqnamesrv-b
+                      - rmqnamesrv1
 
 
-    rmqbroker-a:
+    rmqbroker0:
         image: foxiswho/rocketmq:broker-4.5.1
-        container_name: rmqbroker-a
+        container_name: rmqbroker0
         ports:
             -   10911:10911
         volumes:
-            -   /Users/dxm/docker/rocketmq/logs/borker-a:/opt/logs
-            -   /Users/dxm/docker/rocketmq/store/borker-a:/opt/store
             -   /Users/dxm/docker/rocketmq/conf/broker-a/broker-a.conf:/opt/rocketmq-4.5.1/conf/broker.conf.old
         environment:
             TZ: Asia/Shanghai
-            NAMESRV_ADDR: "rmqnamesrv-a:9876"
+            NAMESRV_ADDR: "rmqnamesrv0:9876"
             JAVA_OPTS: " -Duser.home=/opt"
             JAVA_OPT_EXT: "-server -Xms256m -Xmx256m -Xmn256m"
         command: sh mqbroker -c /opt/rocketmq-4.5.1/conf/broker.conf.old autoCreateTopicEnable=true &
         links:
-            - rmqnamesrv-a:rmqnamesrv-a
-            - rmqnamesrv-b:rmqnamesrv-b
+            - rmqnamesrv0:rmqnamesrv0
+#            - rmqnamesrv-b:rmqnamesrv-b
         networks:
             rmq:
                 aliases:
-                    - rmqbroker-a
-    rmqbroker-a-salve:
+                    - rmqbroker0
+    rmqbroker0_salve:
         image: foxiswho/rocketmq:broker-4.5.1
-        container_name: rmqbroker-a-salve
+        container_name: rmqbroker0_salve
         ports:
             - 10921:10921
         volumes:
-            - /Users/dxm/docker/rocketmq/logs/borker-a:/opt/logs
-            - /Users/dxm/docker/rocketmq/store/borker-a:/opt/store
             - /Users/dxm/docker/rocketmq/conf/broker-a/broker-a-s.conf:/opt/rocketmq-4.5.1/conf/broker.conf.old
         environment:
             TZ: Asia/Shanghai
-            NAMESRV_ADDR: "rmqnamesrv-a:9876"
+            NAMESRV_ADDR: "rmqnamesrv0:9876"
             JAVA_OPTS: " -Duser.home=/opt"
             JAVA_OPT_EXT: "-server -Xms256m -Xmx256m -Xmn256m"
         command: sh mqbroker -c /opt/rocketmq-4.5.1/conf/broker.conf.old autoCreateTopicEnable=true &
         links:
-            - rmqnamesrv-a:rmqnamesrv-a
-            - rmqnamesrv-b:rmqnamesrv-b
+            - rmqnamesrv0:rmqnamesrv0
+            - rmqnamesrv1:rmqnamesrv1
         networks:
             rmq:
                 aliases:
-                    - rmqbroker-a-salve
+                    - rmqbroker0_salve
 
-    rmqbroker-b:
+
+
+    rmqbroker0_salve_2:
         image: foxiswho/rocketmq:broker-4.5.1
-        container_name: rmqbroker-b
+        container_name: rmqbroker0_salve_2
+        ports:
+            - 10922:10922
+        volumes:
+            - /Users/dxm/docker/rocketmq/conf/broker-a/broker-a-s-2.conf:/opt/rocketmq-4.5.1/conf/broker.conf.old
+        environment:
+            TZ: Asia/Shanghai
+            NAMESRV_ADDR: "rmqnamesrv0:9876"
+            JAVA_OPTS: " -Duser.home=/opt"
+            JAVA_OPT_EXT: "-server -Xms256m -Xmx256m -Xmn256m"
+        command: sh mqbroker -c /opt/rocketmq-4.5.1/conf/broker.conf.old autoCreateTopicEnable=true &
+        links:
+            - rmqnamesrv0:rmqnamesrv0
+            - rmqnamesrv1:rmqnamesrv1
+        networks:
+            rmq:
+                aliases:
+                    - rmqbroker0_salve_2
+
+    rmqbroker1:
+        image: foxiswho/rocketmq:broker-4.5.1
+        container_name: rmqbroker1
         ports:
             -   10909:10909
         volumes:
-            -   /Users/dxm/docker/rocketmq/logs/borker-b:/opt/logs
-            -   /Users/dxm/docker/rocketmq/store/borker-b:/opt/store
             -   /Users/dxm/docker/rocketmq/conf/broker-b/broker-b.conf:/opt/rocketmq-4.5.1/conf/broker.conf.old
         environment:
             TZ: Asia/Shanghai
-            NAMESRV_ADDR: "rmqnamesrv-a:9876"
+            NAMESRV_ADDR: "rmqnamesrv0:9876"
             JAVA_OPTS: " -Duser.home=/opt"
             JAVA_OPT_EXT: "-server -Xms256m -Xmx256m -Xmn256m"
         command: sh mqbroker -c /opt/rocketmq-4.5.1/conf/broker.conf.old autoCreateTopicEnable=true &
         links:
-            - rmqnamesrv-a:rmqnamesrv-a
-            - rmqnamesrv-b:rmqnamesrv-b
+            - rmqnamesrv0:rmqnamesrv0
+            - rmqnamesrv1:rmqnamesrv1
         networks:
             rmq:
                 aliases:
-                    - rmqbroker-b
+                    - rmqbroker1
+
+
+    rmqbroker1_salve:
+        image: foxiswho/rocketmq:broker-4.5.1
+        container_name: rmqbroker1_salve
+        ports:
+            - 10821:10821
+        volumes:
+            - /Users/dxm/docker/rocketmq/conf/broker-b/broker-b-s.conf:/opt/rocketmq-4.5.1/conf/broker.conf.old
+        environment:
+            TZ: Asia/Shanghai
+            NAMESRV_ADDR: "rmqnamesrv1:9877"
+            JAVA_OPTS: " -Duser.home=/opt"
+            JAVA_OPT_EXT: "-server -Xms256m -Xmx256m -Xmn256m"
+        command: sh mqbroker -c /opt/rocketmq-4.5.1/conf/broker.conf.old autoCreateTopicEnable=true &
+        links:
+            - rmqnamesrv0:rmqnamesrv0
+            - rmqnamesrv1:rmqnamesrv1
+        networks:
+            rmq:
+                aliases:
+                    - rmqbroker1_salve
+
+
+
     rmqconsole:
         image: styletang/rocketmq-console-ng
         container_name: rmqconsole
         ports:
             - 8180:8080
         environment:
-            JAVA_OPTS: -Drocketmq.namesrv.addr=rmqnamesrv-a:9876;rmqnamesrv-b:9877 -Dcom.rocketmq.sendMessageWithVIPChannel=false
+            JAVA_OPTS: -Drocketmq.namesrv.addr=rmqnamesrv0:9876;rmqnamesrv-b:9877 -Dcom.rocketmq.sendMessageWithVIPChannel=false
         networks:
             rmq:
                 aliases:
