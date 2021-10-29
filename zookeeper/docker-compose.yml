@@ -1,16 +1,44 @@
-version: '3'
+version: '3.1'
 services:
-  zookeeper:
-    image: zookeeper
+  zoo1:
+    image: zookeeper:3.4.11
+    restart: always
+    hostname: zoo1
+    container_name: zk1
     ports:
       - 2181:2181
-  admin:
-    image: chenchuxin/dubbo-admin
-    depends_on:
-      - zookeeper
-    ports:
-      - 8080:8080
+    volumes:
+      - $PWD/zk1/data:/data
+      - $PWD/zk1/datalog:/datalog
     environment:
-      - dubbo.registry.address=zookeeper://zookeeper:2181
-      - dubbo.admin.root.password=root
-      - dubbo.admin.guest.password=guest
+      ZOO_MY_ID: 1
+      # ZOO_SERVERS: server.1=zoo1:2888:3888 server.2=zoo2:2888:3888 server.3=zoo3:2888:3888
+      ZOO_SERVERS: server.1=zoo1:2888:3888
+
+  # zoo2:
+  #   image: zookeeper:3.4.11
+  #   restart: always
+  #   hostname: zoo2
+  #   container_name: zk2
+  #   ports:
+  #     - 2182:2181
+  #   volumes:
+  #     - $PWD/zk2/data:/data
+  #     - $PWD/zk2/datalog:/datalog
+  #   environment:
+  #     ZOO_MY_ID: 2
+  #     ZOO_SERVERS: server.1=zoo1:2888:3888 server.2=zoo2:2888:3888 server.3=zoo3:2888:3888
+
+  # zoo3:
+  #   image: zookeeper:3.4.11
+  #   restart: always
+  #   hostname: zoo3
+  #   container_name: zk3
+  #   ports:
+  #     - 2183:2181
+  #   volumes:
+  #     - $PWD/zk3/data:/data
+  #     - $PWD/zk3/datalog:/datalog
+  #   environment:
+  #     ZOO_MY_ID: 3
+  #     ZOO_SERVERS: server.1=zoo1:2888:3888 server.2=zoo2:2888:3888 server.3=zoo3:2888:3888
