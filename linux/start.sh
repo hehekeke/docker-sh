@@ -8,7 +8,7 @@ docker rm RealServer1
 docker stop RealServer2
 docker rm RealServer2
 
-docker network create --subnet=172.18.0.0/16 mynetwork
+docker network create --subnet=172.18.0.0/32 mynetwork
 
 docker run -itd  --privileged --name RealServer1 --net mynetwork --ip 172.18.0.2 wyqwb/centos-test
 

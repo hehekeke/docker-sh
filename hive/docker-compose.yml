@@ -1,11 +1,11 @@
 version: "3"
 
 networks:
-  default:
-    driver: bridge
+  hive:
     ipam:
       config:
-        - subnet: 172.18.0.0/16
+        - subnet: 172.17.0.0/16
+#        - gateway: 172.18.0.1
 services:
   namenode:
     image: bde2020/hadoop-namenode:2.0.0-hadoop2.7.4-java8
